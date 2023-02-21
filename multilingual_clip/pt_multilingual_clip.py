@@ -20,6 +20,9 @@ class MultilingualCLIP(transformers.PreTrainedModel):
         return self.LinearTransformation(embs)
 
     def forward_after_tokenization(self, input_tensor):
+        """
+        input_tensor: tokenized vector and attention vector
+        """
         att = input_tensor['attention_mask']
         embs = self.transformer(**input_tensor)[0]
         embs = (embs * att.unsqueeze(2)).sum(dim=1) / att.sum(dim=1)[:, None]
