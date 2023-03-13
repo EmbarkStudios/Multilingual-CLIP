@@ -9,12 +9,9 @@ class MultilingualCLIP(transformers.PreTrainedModel):
     config_class = Config_MCLIP.MCLIPConfig
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_name_or_path: Optional[Union[str, os.PathLike]], *model_args, **kwargs):
-        # Kwargs, such as cache_dir, and local_files_only are absorbed by the inherited from_pretrained,
-        # they need to be forwarded to the next model as well.
-        settings_kwargs = copy_settings_kwargs(**kwargs)
-        slf = super().from_pretrained(pretrained_model_name_or_path, model_args, **kwargs)
-        slf.transformer = transformers.AutoModel.from_pretrained(slf.config.modelBase, **settings_kwargs)
+    def load(cls, clip_model_path: str, roberta_model_path: str):
+        slf = super().from_pretrained(clip_model_path, None, local_files_only=True)
+        slf.transformer = transformers.AutoModel.from_pretrained(roberta_model_path, None, local_files_only=True)
         slf.LinearTransformation = torch.nn.Linear(in_features=slf.config.transformerDimensions,
                                                    out_features=slf.config.numDims)
         return slf
